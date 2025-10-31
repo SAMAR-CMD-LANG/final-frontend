@@ -25,11 +25,13 @@ export default function LoginPage() {
     }, [isAuthenticated, loading, router])
 
     useEffect(() => {
-        // Check for error in URL parameters
-        const urlParams = new URLSearchParams(window.location.search)
-        const urlError = urlParams.get('error')
-        if (urlError) {
-            setError(decodeURIComponent(urlError))
+        // Check for error in URL parameters (only on client side)
+        if (typeof window !== 'undefined') {
+            const urlParams = new URLSearchParams(window.location.search)
+            const urlError = urlParams.get('error')
+            if (urlError) {
+                setError(decodeURIComponent(urlError))
+            }
         }
     }, [])
 
