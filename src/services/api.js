@@ -99,6 +99,38 @@ class ApiService {
     async getCategories() {
         return this.request('/habits/categories')
     }
+
+    async exportHabits(format = 'json', days = 30) {
+        const params = new URLSearchParams({ format, days: days.toString() })
+        const url = `${this.baseURL}/habits/export?${params}`
+        const token = localStorage.getItem('auth_token')
+
+        const config = {
+            headers: {
+                ...(token && { Authorization: `Bearer ${token}` }),
+            },
+        }
+
+        try {
+            const response = await fetch(url, config)
+
+            if (!response.ok) {
+                const errorData = await response.json()
+                throw new Error(errorData.error || 'Export failed')
+            }
+
+            if (format === 'csv') {
+                // Return raw text for CSV
+                return await response.text()
+            } else {
+                // Return JSON for JSON format
+                return await response.json()
+            }
+        } catch (error) {
+            console.error('Export API Error:', error)
+            throw error
+        }
+    }
 }
 
 export default new ApiService()
